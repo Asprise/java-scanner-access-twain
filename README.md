@@ -3,6 +3,8 @@
 Asprise Scanning and Imageing SDK offers a high performance API library so that you can acquire images from and have total control on almost all kinds of scanners on both Windows 32bit and 64bit. With the SDK’s powerful and flexible API, you can equip your Java applications (Java applets, web applications, Swing/JavaFX components, JEE enterprise applications), C# VB.NET applications (Windows applications, Sliverlight, ASP.NET web service applications, ActiveX controls, etc.), Python, C/C++ and Delphi applications with functionality of high speed document scanning and image acquisition. High speed ADF scanning allows the end user to scan multiple pages into a ultra small size multi-page TIFF or PDF (including PDF/A-1) file.
 — Edit
 
+Visit http://asprise.com/document-scanner-image-pdf/java-scanning-api-overview.html for developer's guide.
+
 Core Features:
 
 - Compatible With Almost All Scanners: Asprise Scanning and Imaging SDK supports almost any kind of scanner on Windows 32bit and 64bit. With the SDK’s widest compatibility, you can rest assure that your customers will able to scan from their scanners.
