@@ -1,7 +1,7 @@
 /**********************************************************************************************
  *
- * Asprise Scanning and Imaging API
- * Copyright (C) 1998-2016. Asprise Inc. <asprise.com>
+ * Asprise Scanning and Imaging API - http://asprise.com/document-scanner-image-pdf/java-scanning-api-overview.html
+ * Copyright (C) 1998-2026. Asprise Inc. <asprise.com>
  *
  * This file is licensed under the GNU Affero General Public License version 3 as published by
  * the Free Software Foundation.
@@ -27,7 +27,7 @@ import java.util.Map;
  */
 public class Source {
 
-    // struct: TW_IDENTITY
+
 
     int Id;
     int ProtocolMajor;
@@ -36,10 +36,13 @@ public class Source {
     String Manufacturer;
     String ProductFamily;
     String ProductName;
+    String dsModuleName;
 
     boolean defaultSource;
     boolean feeder;
     boolean flatbed;
+
+    boolean connected;
 
     List<Capability> caps;
 
@@ -56,9 +59,11 @@ public class Source {
         this.ProtocolMinor = TwainUtil.toInteger(jsonObject.get("ProtocolMinor"), -1);
         this.SupportedGroups = TwainUtil.toInteger(jsonObject.get("SupportedGroups"), -1);
         this.defaultSource = jsonObject.containsKey("default") ? (Boolean)jsonObject.get("default") : false;
+        this.connected = jsonObject.containsKey("connected") ? (Boolean)jsonObject.get("connected") : false;
         this.feeder = jsonObject.containsKey("feeder") ? (Boolean)jsonObject.get("feeder") : false;
         this.flatbed = jsonObject.containsKey("flatbed") ? (Boolean)jsonObject.get("flatbed") : false;
         this.caps = Capability.createCapList((Map<String, Object>) jsonObject.get("caps"));
+        this.dsModuleName = jsonObject.containsKey("ds_module") ? TwainUtil.toString(jsonObject.get("ds_module")) : null;
     }
 
     public static List<Source> createSourceList(List jsonArray) {
@@ -123,6 +128,15 @@ public class Source {
         return ProductName;
     }
 
+    public String getDsModuleName() {
+        return dsModuleName;
+    }
+
+    /** Returns the source name, i.e., value of {@linkplain #getProductName()} */
+    public String getSourceName() {
+        return getProductName();
+    }
+
     public boolean isDefaultSource() {
         return defaultSource;
     }
@@ -134,6 +148,8 @@ public class Source {
     public boolean hasFlatbed() {
         return flatbed;
     }
+
+    public boolean isConnected() { return connected; }
 
     public List<Capability> getCaps() {
         return caps;
@@ -184,7 +200,6 @@ public class Source {
         String name;
         int code;
 
-        /** Can be: null, Integer, String, List of Int/String, CapValueEnumeration, or CapValueRange. */
         Object value;
 
         String errorString;
@@ -223,16 +238,11 @@ public class Source {
                     this.value = null;
                     this.supported = false;
                 } else {
-                    this.value = capValueInJson; // simple value.
+                    this.value = capValueInJson; 
                 }
             }
         }
 
-        /**
-         * Return 1 if valid, 0 if invalid; -1 if unable to valid.
-         * @param attempt
-         * @return
-         */
         public int validate(Object attempt) {
             if(attempt == value) {
                 return 1;
@@ -278,7 +288,6 @@ public class Source {
             return code;
         }
 
-        /** Can be of type: null, Integer, String, List of Int/String, CapValueEnumeration, or CapValueRange. */
         public Object getValue() {
             return value;
         }
@@ -289,7 +298,7 @@ public class Source {
             }
 
             if(value instanceof List) {
-                return null; // unknown
+                return null; 
             } else if(value instanceof CapValueContainer) {
                 return ((CapValueContainer)value).getCurrentValue();
             } else {
@@ -301,10 +310,6 @@ public class Source {
             return errorString;
         }
 
-        /**
-         * Return false if this cap is not supported by the device.
-         * @return
-         */
         public boolean isSupported() {
             return supported;
         }
@@ -323,11 +328,11 @@ public class Source {
         }
     }
 
-    // The container structure will be one of four types: TWON_ARRAY, TWON_ENUMERATION,
-    // TWON_ONEVALUE, or TWON_RANGE.
 
-    // TWON_ONEVALUE: Direct value, either Integer or String
-    // TWON_ARRAY: List of Integer or String
+
+
+
+
 
     public static abstract class CapValueContainer {
 
@@ -335,7 +340,6 @@ public class Source {
 
         abstract public Object getDefaultValue();
 
-        /** Check whether the attempt is valid against the enum or range. */
         abstract public boolean validate(Object attempt);
 
         public Object getCurrentValueFallBackToDefault() {
@@ -349,8 +353,7 @@ public class Source {
 
     /** TWON_ENUMERATION */
     public static class CapValueEnumeration extends CapValueContainer {
-        // ItemType
-        // NumItems
+
         int CurrentIndex = -1;
         int DefaultIndex = -1;
         List ItemList;
@@ -409,7 +412,7 @@ public class Source {
 
     /** TWON_RANGE */
     public static class CapValueRange extends CapValueContainer {
-        // ItemType;
+
         Number MinValue;
         Number MaxValue;
         Number StepSize;

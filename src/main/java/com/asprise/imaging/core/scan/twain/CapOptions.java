@@ -1,7 +1,7 @@
 /**********************************************************************************************
  *
- * Asprise Scanning and Imaging API
- * Copyright (C) 1998-2016. Asprise Inc. <asprise.com>
+ * Asprise Scanning and Imaging API - http://asprise.com/document-scanner-image-pdf/java-scanning-api-overview.html
+ * Copyright (C) 1998-2026. Asprise Inc. <asprise.com>
  *
  * This file is licensed under the GNU Affero General Public License version 3 as published by
  * the Free Software Foundation.
@@ -17,11 +17,14 @@
  **********************************************************************************************/
 package com.asprise.imaging.core.scan.twain;
 
-import javax.swing.ComboBoxModel;
+import javax.swing.*;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
+import java.awt.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Common used caption options
@@ -57,6 +60,10 @@ public class CapOptions {
             return label;
         }
 
+        public void setLabel(String label) {
+            this.label = label;
+        }
+
         public boolean isDefault() {
             return isDefault;
         }
@@ -70,11 +77,11 @@ public class CapOptions {
             return label == null ? String.valueOf(value) : label;
         }
 
-        /**
-         * Short-hand method to create list.
-         * @param args in format value, label [, default].
-         */
         public static List<CapOptionItem> createCapOptionItemList(Object ... args) {
+            if(args.length ==1 && args[0].getClass().isArray()) {
+                args = (Object[]) args[0];
+            }
+
             List<CapOptionItem> items = new ArrayList<CapOptionItem>();
             for(int i = 0; i < args.length; ) {
                 Object value = args[i++];
@@ -155,7 +162,6 @@ public class CapOptions {
                 TwainConstants.TWSS_A3, "A3 (297 × 420mm)",
                 TwainConstants.TWSS_A5, "A5 (148 x 210mm)",
                 TwainConstants.TWSS_A6, "A6 (104 x 148mm)",
-                TwainConstants.TWSS_A6, "A6 (104 x 148mm)",
                 TwainConstants.TWSS_A7, "A7 (74 x 105mm)",
                 TwainConstants.TWSS_A8, "A8 (52 x 74mm)",
 
@@ -189,6 +195,9 @@ public class CapOptions {
         );
     }
 
+    /**
+     * A model with list of {@linkplain CapOptionItem} as elements.
+     */
     public static class CapOptionsComboBoxModel implements ComboBoxModel {
         List<ListDataListener> listeners = new ArrayList<ListDataListener>();
 
@@ -196,28 +205,18 @@ public class CapOptions {
         int selecteIndex = -1;
         CapOptionItem selectedItem;
 
-        // stored for future use
         Source.Capability capability;
         Object defaultSelectedValue;
 
+        Map<String, String> i18n;
 
         public CapOptionsComboBoxModel() {
         }
 
-        /**
-         * Will set the selectedItem to cap value, or list default (if cap value doesn't exist) or fall back to the first item.
-         * @param fullList full list of items
-         * @param capability
-         */
         public CapOptionsComboBoxModel(List<CapOptionItem> fullList, Source.Capability capability, boolean filterInvalidItems, Object selectedValue) {
             setList(fullList, capability, filterInvalidItems, selectedValue);
         }
 
-        /**
-         * Will set the selectedItem to cap value, or list default (if cap value doesn't exist) or fall back to the first item.
-         * @param fullList full list of items
-         * @param capability
-         */
         public void setList(List<CapOptionItem> fullList, Source.Capability capability, boolean filterInvalidItems, Object defaultSelectedValue) {
             this.selecteIndex = -1;
             this.selectedItem = null;
@@ -264,15 +263,19 @@ public class CapOptions {
             } else {
                 if(indexListDefault >= 0) {
                     selecteIndex = indexListDefault;
-                } else { // fall back to use the first one.
+                } else { 
                     selecteIndex = list.size() > 0 ? 0 : -1;
                 }
             }
 
             selectedItem = selecteIndex >= 0 ? list.get(selecteIndex) : null;
 
-            for(ListDataListener listener : listeners) {
-                listener.contentsChanged(new ListDataEvent(this, ListDataEvent.CONTENTS_CHANGED, 0, 0));
+            try {
+                for (ListDataListener listener : listeners) { 
+                    listener.contentsChanged(new ListDataEvent(this, ListDataEvent.CONTENTS_CHANGED, 0, 0));
+                }
+            } catch (Throwable t) {
+                t.printStackTrace();
             }
         }
 
@@ -321,6 +324,38 @@ public class CapOptions {
         @Override
         public void removeListDataListener(ListDataListener l) {
             listeners.remove(l);
+        }
+    }
+
+    public static class CapOptionsComboBoxRenderer extends DefaultListCellRenderer {
+        Map<String, Icon> icons = new HashMap<String, Icon>();
+
+        public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+            super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+            CapOptionItem item = (CapOptionItem) value;
+            setText(item.getLabel());
+
+            Icon icon = null;
+            String key = item.getValue().toString();
+            for(String substr : icons.keySet()) {
+                if(key.toLowerCase().contains(substr.toLowerCase())) {
+                    icon = icons.get(substr);
+                    break;
+                }
+            }
+            setIcon(icon);
+            setFont(list.getFont());
+            return this;
+        }
+
+        public CapOptionsComboBoxRenderer setIcon(String substr, Icon icon) {
+            icons.put(substr, icon);
+            return this;
+        }
+
+        public CapOptionsComboBoxRenderer setIconOnRight(boolean iconOnRight) {
+            setHorizontalTextPosition(iconOnRight ? SwingConstants.LEFT : SwingConstants.RIGHT);
+            return this;
         }
     }
 }

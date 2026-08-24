@@ -1,7 +1,7 @@
 /**********************************************************************************************
  *
- * Asprise Scanning and Imaging API
- * Copyright (C) 1998-2016. Asprise Inc. <asprise.com>
+ * Asprise Scanning and Imaging API - http://asprise.com/document-scanner-image-pdf/java-scanning-api-overview.html
+ * Copyright (C) 1998-2026. Asprise Inc. <asprise.com>
  *
  * This file is licensed under the GNU Affero General Public License version 3 as published by
  * the Free Software Foundation.
@@ -18,26 +18,27 @@
 package com.asprise.imaging.core.util.system;
 
 
+import com.asprise.imaging.core.Imaging;
+import com.asprise.imaging.core.scan.twain.TwainNative;
+import com.asprise.imaging.core.util.Base64;
+import com.asprise.imaging.core.util.prefs.FileSystemPreferencesFactory;
+
 import javax.swing.JOptionPane;
-import javax.xml.bind.DatatypeConverter;
-import java.awt.HeadlessException;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+
+import java.awt.*;
+import java.io.*;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.math.BigInteger;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
+import java.security.CodeSource;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
-import java.util.Arrays;
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
+import java.util.List;
+import java.util.prefs.Preferences;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -46,9 +47,136 @@ public class Utils {
     static String osName = System.getProperty("os.name");
     static String osArch = System.getProperty("os.arch");
 
+    private static volatile Class _entryClass;
+
+    
+    public static boolean setEntryClassIfNotYet(Class cls) {
+        if(_entryClass == null) {
+            synchronized (Utils.class) {
+                if(_entryClass != null) {
+                    _entryClass = cls;
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    
+    public static Class getEntryClass() {
+        return _entryClass;
+    }
+
+    
+    public static Preferences getPrefsNode(String nodeName) {
+        Preferences prefs = null;
+        try {
+            prefs = new FileSystemPreferencesFactory().userRoot().node(nodeName);
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
+
+        if(prefs != null) {
+            return prefs;
+        }
+
+        try {
+            prefs = Preferences.userRoot().node(nodeName);
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
+        if(prefs != null) {
+            return prefs;
+        }
+
+        return Preferences.userRoot();
+    }
+
+    
+    public static String getSystemPropertyOrEnv(String key, String defaultValueToReturn) {
+        String value = System.getProperty(key);
+        if(value == null) {
+            value = System.getenv(key);
+        }
+        return value == null || value.trim().length() == 0 ? defaultValueToReturn : value;
+    }
+
+    
+    public static boolean getSystemPropertyOrEnvAsBoolean(String key, boolean defaultValueToReturn) {
+        String value = getSystemPropertyOrEnv(key, null);
+        if(value != null) {
+            value = value.trim();
+        }
+        if("true".equalsIgnoreCase(value) || "t".equalsIgnoreCase(value) || "1".equalsIgnoreCase(value)) {
+            return true;
+        } else if("false".equalsIgnoreCase(value) || "f".equalsIgnoreCase(value) || "0".equalsIgnoreCase(value)) {
+            return false;
+        } else {
+            return defaultValueToReturn;
+        }
+    }
+
+    
+    public static boolean openFileUsingDesktop(File file) {
+
+        try {
+            Class classDesktop = Class.forName("java.awt.Desktop");
+            if(classDesktop == null) {
+                System.out.println("Class not found: java.awt.Desktop");
+                return false;
+            }
+            Method methodGetDesktop = classDesktop.getMethod("getDesktop");
+            Object desktop = methodGetDesktop.invoke(null);
+            if(desktop == null) {
+                System.out.println("java.awt.Desktop.getDesktop() returns null");
+                return false;
+            }
+
+            Method methodOpen = desktop.getClass().getMethod("open", File.class);
+            methodOpen.invoke(desktop, file);
+            return true;
+        } catch (Throwable e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    
+    public static long getHwnd(Component component) {
+        return TwainNative.getHwnd(component);
+    }
+
     
     public static boolean isWindows() {
         return osName != null && osName.toLowerCase().startsWith("windows");
+    }
+
+    private static String _windowsVer = null;
+    
+    public static String getWindowsVer() {
+        if(_windowsVer == null) {
+            try {
+                _windowsVer = execute(true, false, false, new String[]{"cmd", "/c", "ver"}, null, null);
+                if(_windowsVer != null) {
+                    _windowsVer = _windowsVer.trim();
+                }
+            } catch (Throwable t) {
+
+            }
+        }
+        return _windowsVer;
+    }
+
+    public static boolean isWindowsOs64Bit() {
+        String procArch = System.getenv("PROCESSOR_ARCHITECTURE");
+        if(procArch != null && procArch.contains("64")) {
+            return true;
+        }
+        procArch = System.getenv("PROCESSOR_ARCHITEW6432");
+        if(procArch != null && procArch.contains("64")) {
+            return true;
+        }
+        return false;
     }
 
     
@@ -64,6 +192,37 @@ public class Utils {
     
     public static boolean is32Bit() {
         return !is64Bit();
+    }
+
+    public static boolean isJava5() {
+        String javaVersion = System.getProperty("java.version");
+        boolean isJava5 = javaVersion != null && javaVersion.startsWith("1.5");
+        return isJava5;
+    }
+
+    static Boolean inIde;
+
+    
+    private static boolean isInIde() {
+        if(inIde != null) {
+            return inIde;
+        }
+        try {
+
+            String classPath = System.getProperty("java.class.path");
+            inIde = classPath != null && classPath.contains("IntelliJ");
+            if(inIde) {
+                System.out.println("Running from inside IDE.");
+            }
+        } catch (Throwable e) {
+            inIde = false;
+        }
+        return inIde;
+    }
+
+    
+    public static boolean isAspriseDevInIde() {
+        return isInIde() && !StringUtils.isEmpty(System.getenv("ASPRISE_DEV"));
     }
 
     
@@ -163,6 +322,31 @@ public class Utils {
         return null;
     }
 
+    public static boolean isFileInUse(File file) {
+
+        if(file == null || !file.isFile()) {
+            return false;
+        }
+
+        OutputStream outputStream = null;
+        try {
+            outputStream = new FileOutputStream(file, true);
+            return false;
+        } catch (Throwable e) {
+
+            return true;
+        } finally {
+            if(outputStream != null) {
+                try {
+                    outputStream.close();
+                } catch (Throwable t) {
+
+                }
+            }
+        }
+
+    }
+
     public static void displayErrorDialogAndThrowException(String errorMesg, Throwable t, boolean rethrowException) {
         try {
             if(errorMesg != null && errorMesg.length() > 80) {
@@ -201,27 +385,42 @@ public class Utils {
         }
     }
 
-    static File dirTempWritable = null;
+    static File dirTempWritableAnyChars = null;
+    static File dirTempWritableAsciiOnly = null;
 
     public static File getTempFolderWritable(boolean asciiCharsOnly) {
-        if(dirTempWritable != null) {
-            return dirTempWritable;
+        if(asciiCharsOnly) {
+            if (dirTempWritableAsciiOnly != null) {
+                return dirTempWritableAsciiOnly;
+            }
+        } else {
+            if(dirTempWritableAnyChars != null) {
+                return dirTempWritableAnyChars;
+            }
         }
 
         File[] dirs = new File[] {
-                System.getenv("ASPRISE_TEMP_FOLDER") == null ? null : new File(System.getenv("ASPRISE_TEMP_FOLDER")),
-                System.getenv("TMP") == null ? null : new File(System.getenv("TMP")),
-                System.getProperty("java.io.tmpdir") == null ? null : new File(System.getProperty("java.io.tmpdir")), 
-                System.getProperty("user.dir") == null ? null : new File(System.getProperty("user.dir")), 
-                new File("."),
-            new File(Utils.isWindows() ?
-                ((System.getProperty("java.io.tmpdir") != null && System.getProperty("java.io.tmpdir").length() > 0 ? System.getProperty("java.io.tmpdir").substring(0, 1) : "C") + ":\\") : "/") 
+                System.getenv("ASPRISE_TEMP_FOLDER") == null ? null : new File(System.getenv("ASPRISE_TEMP_FOLDER"))
+                , System.getenv("TMP") == null ? null : new File(System.getenv("TMP"))
+                , System.getProperty("java.io.tmpdir") == null ? null : new File(System.getProperty("java.io.tmpdir")) 
+                , System.getProperty("user.dir") == null ? null : new File(System.getProperty("user.dir")) 
+                , new File(Utils.isWindows() ? ((System.getProperty("java.io.tmpdir") != null && System.getProperty("java.io.tmpdir").length() > 0 ? System.getProperty("java.io.tmpdir").substring(0, 1) : "C") + ":\\") : "/") 
+                , Utils.isWindows() ? new File(System.getenv("HOMEDRIVE") + "\\tmp") : null
+                , Utils.isWindows() ? new File(System.getenv("HOMEDRIVE") + "\\temp") : null
+                , new File(".")
         };
 
         for(File dir : dirs) {
-            if(dir != null && (!asciiCharsOnly || isAllASCII(dir.getAbsolutePath())) && testCreateFileInside(dir)) {
-                dirTempWritable = dir;
-                return dirTempWritable;
+            if(asciiCharsOnly) {
+                if (dir != null && (!asciiCharsOnly || isAllASCII(dir.getAbsolutePath())) && testCreateFileInside(dir)) {
+                    dirTempWritableAsciiOnly = dir;
+                    return dirTempWritableAsciiOnly;
+                }
+            } else {
+                if (dir != null && testCreateFileInside(dir)) {
+                    dirTempWritableAnyChars = dir;
+                    return dirTempWritableAnyChars;
+                }
             }
         }
 
@@ -294,8 +493,21 @@ public class Utils {
             e.printStackTrace();
         }
 
+        if(targetFile.exists() && !skipWriting && isFileInUse(targetFile)) {
+            while(targetFile.exists()) {
+                targetFile = new File(targetFolder, Integer.toString((int) (Math.random() * 1000)) + "-" + simpleName);
+                if(System.getenv("ASPRISE_DEV") != null) {
+                    System.out.println("New file to avoid name collision: " + targetFile);
+                }
+            }
+        }
+
         if(! skipWriting) {
             InputStream inputStream = classLoader.getResourceAsStream(resourcePath);
+            if(inputStream == null) {
+
+                inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(resourcePath);
+            }
             if(inputStream == null) {
                 throw new IOException("Can not find resource: " + resourcePath);
             }
@@ -331,7 +543,34 @@ public class Utils {
     }
 
     
-    static String getMd5(InputStream input) {
+    public static String getMd5(File file) {
+        try {
+            return getMd5(new FileInputStream(file));
+        } catch (Throwable e) {
+            return null;
+        }
+    }
+
+    
+    public static boolean verifyMd5(File file, String expectedMd5) {
+        if(file == null || expectedMd5 == null) {
+            return false;
+        }
+        return expectedMd5.trim().equalsIgnoreCase(getMd5(file));
+    }
+
+    
+    public static String getMd5(String s) {
+        try {
+            ByteArrayInputStream inputStream = new ByteArrayInputStream(s.getBytes("UTF-8"));
+            return getMd5(inputStream);
+        } catch (Throwable t) {
+            return null;
+        }
+    }
+
+    
+    public static String getMd5(InputStream input) {
         if(input == null) {
             return null;
         }
@@ -357,13 +596,26 @@ public class Utils {
         }
     }
 
-    public static byte[] md5Decode(String base64) {
-        byte[] bytes = DatatypeConverter.parseBase64Binary(base64);
-        return bytes;
+
+
+
+    public static byte[] base64Decode(String base64) {
+        base64 = base64.replaceAll("\\s", "");
+        try {
+            return Base64.base64ToByteArray(base64);
+        } catch (Throwable e) {
+
+            throw new RuntimeException("Base64 decode failed", e);
+        }
     }
 
-    public static String md5Encode(byte[] content) {
-        return DatatypeConverter.printBase64Binary(content);
+    public static String base64Encode(byte[] content) {
+        try {
+            return Base64.byteArrayToBase64(content);
+        } catch (Throwable e) {
+
+            throw new RuntimeException("Base64 encode failed", e);
+        }
     }
 
     public static String getFileExtensionWithoutDot(String fileName) {
@@ -380,6 +632,19 @@ public class Utils {
         if(isWindows()) {
             try {
                 Process p = new ProcessBuilder("explorer.exe", path).start();
+                return true;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return false;
+    }
+
+    public static boolean showFilesInWindowsExplorer(File file) {
+        if(isWindows()) {
+            try {
+                Process p = new ProcessBuilder("explorer.exe", "/select,",
+                        "\"" + file.getAbsolutePath().replace("/", "\\") +"\"").start();
                 return true;
             } catch (IOException e) {
                 e.printStackTrace();
@@ -467,7 +732,8 @@ public class Utils {
     }
 
     public static void main(String[] args) {
-        System.out.println(execute(true, true, true, new String[] {"cmd", "/c", "dir"}, new File("W:"), null));
+
+        System.out.println(isAllASCII("C:\\Users\\甲\\AppData\\Roaming\\ScanApp2"));
     }
 
     
@@ -506,7 +772,7 @@ public class Utils {
             if(throwException) {
                 throw new RuntimeException(t);
             } else {
-                if(System.getProperty("DEBUG") != null) {
+                if(System.getenv("DEBUG") != null) {
                     t.printStackTrace();
                 }
                 if(returnOutput) {
@@ -538,7 +804,7 @@ public class Utils {
         return props;
     }
 
-    private static boolean isAllASCII(String input) {
+    public static boolean isAllASCII(String input) {
         boolean isASCII = true;
         for (int i = 0; i < input.length(); i++) {
             int c = input.charAt(i);
@@ -548,5 +814,197 @@ public class Utils {
             }
         }
         return isASCII;
+    }
+
+    public static int LIC_TYPE_LIT = 1;
+    public static int LIC_TYPE_STD = 2;
+    public static int LIC_TYPE_PRO = 3;
+    public static int LIC_TYPE_ENT = 4;
+
+    public static boolean isEnterpriseOrEvaluation(Imaging imaging) {
+        int licType = getLicenseType(imaging);
+        return licType == 0 || licType == LIC_TYPE_ENT;
+    }
+
+    public static int getLicenseType(Imaging imaging) {
+        return getLicenseType(imaging != null ? imaging.getLicense() : null);
+    }
+
+    public static int getLicenseType(String otherLic) {
+        String licTypeShort = null;
+
+        String lic = System.getProperty("GLOBAL_FLEX_LICENSE"); 
+        if(lic == null || lic.trim().length() == 0) {
+            lic = otherLic != null && otherLic.length() > 0 ? otherLic : lic; 
+        }
+
+        licTypeShort = lic != null && lic.length() >= 3 ? lic.substring(0, 3) : null; 
+        if(licTypeShort == null) {
+            String licName = System.getProperty("ASCAN_LICENSE_NAME"); 
+            String licCode = System.getProperty("ASCAN_LICENSE_CODE");
+            if (licName == null || licCode == null || licName.trim().length() == 0 || licCode.trim().length() == 0) {
+
+            } else {
+                licName = licName.trim();
+                licTypeShort = licName.length() > 3 ? licName.substring(licName.length() - 3, licName.length()) : null; 
+            }
+        }
+
+        if(licTypeShort == null) {
+            return 0;
+        }
+
+        if ("LIT".equalsIgnoreCase(licTypeShort)) {
+            return LIC_TYPE_LIT;
+        } else if ("STD".equalsIgnoreCase(licTypeShort)) {
+            return LIC_TYPE_STD;
+        } else if ("PRO".equalsIgnoreCase(licTypeShort)) {
+            return LIC_TYPE_PRO;
+        } else if ("ENT".equalsIgnoreCase(licTypeShort)) {
+            return LIC_TYPE_ENT;
+        } else {
+            return 0;
+        }
+    }
+
+    public static boolean isEval(Imaging imaging) {
+        String value = System.getProperty("GLOBAL_FLEX_LICENSE"); 
+        if(value != null && value.length() > 0) {
+            return false;
+        }
+
+        value = imaging != null ? imaging.getLicense() : null; 
+        if(value != null && value.length() > 0) {
+            return false;
+        }
+
+        value = System.getProperty("ASCAN_LICENSE_NAME"); 
+        if(value != null && value.length() > 0) {
+            return false;
+        }
+
+        return true;
+    }
+
+    static Boolean usingFlexDll = null;
+
+    
+    public static boolean isFlex() {
+        if(usingFlexDll == null) {
+            String versionAndBuildInfo = Imaging.getLibraryVersion() + " " + Imaging.getLibraryBuildInfo();
+            usingFlexDll = versionAndBuildInfo.toUpperCase().contains("FLEX");
+        }
+        return usingFlexDll;
+    }
+
+    
+    public static void readPropertiesFromUtf8(InputStream sourceInput, Properties saveTo) {
+        BufferedReader reader = null;
+        String line = null;
+        try {
+            reader = new BufferedReader(new InputStreamReader(sourceInput, "UTF-8"));
+            while ((line = reader.readLine()) != null) {
+                line = line.trim();
+                if (line.length() == 0 || line.startsWith("!") || line.startsWith("#")) { 
+                    continue;
+                }
+
+                int indexOfEqual = line.indexOf('=');
+                int indexOfColon = line.indexOf(':');
+                int indexOfSeparator = -1;
+                if (indexOfEqual < 0) {
+                    indexOfSeparator = indexOfColon;
+                } else {
+                    if (indexOfColon < 0) {
+                        indexOfSeparator = indexOfEqual;
+                    } else {
+                        indexOfSeparator = Math.min(indexOfEqual, indexOfColon);
+                    }
+                }
+
+                if (indexOfSeparator < 0) {
+                    System.err.println("Invalid line in properties: " + line);
+                    continue;
+                }
+
+                String key = line.substring(0, indexOfSeparator).trim();
+                String value = line.substring(indexOfSeparator + 1).trim();
+                value = value.replace("\\=", "=");
+                value = value.replace("\\:", ":");
+                value = value.replace("\\n", "\n");
+
+                if (value.startsWith("base64,")) {
+                    byte[] bytes = base64Decode(value.substring("base64,".length()));
+                    value = new String(bytes, 0, bytes.length, "UTF-8");
+                }
+
+                saveTo.setProperty(key, value);
+            }
+        } catch (Throwable t) {
+            t.printStackTrace();
+        } finally {
+            if(reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    
+    public static java.util.List<String> searchInCodeSourceRoot(final String fileNamePattern) {
+        List<String> list = new ArrayList<String>();
+        CodeSource codeSource = Utils.class.getProtectionDomain().getCodeSource();
+        URL location = codeSource == null ? null : codeSource.getLocation();
+
+        if(location == null) {
+            return null;
+        }
+
+        if(location.toString().endsWith(".jar")) {
+            ZipInputStream zip = null;
+            try {
+                zip = new ZipInputStream(new BufferedInputStream(location.openStream()));
+
+                for(ZipEntry entry = zip.getNextEntry(); entry != null ; entry = zip.getNextEntry()){
+
+                    if(StringUtils.patternMatchString(fileNamePattern, entry.getName(), true)) {
+                        list.add(entry.getName());
+                    }
+                }
+            } catch (Throwable t) {
+                t.printStackTrace();
+            } finally {
+                if(zip != null) {
+                    try {
+                        zip.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+        } else if("file".equalsIgnoreCase(location.getProtocol())) {
+            try {
+                File dir = new File(location.toURI());
+
+                String[] files = dir.list();
+
+                if(files != null) {
+                    for(String file : files) {
+                        if(StringUtils.patternMatchString(fileNamePattern, file, true)) {
+                            list.add(file);
+                        }
+                    }
+                }
+
+            } catch (Throwable t) {
+                t.printStackTrace();
+            }
+        }
+
+        return list;
     }
 }

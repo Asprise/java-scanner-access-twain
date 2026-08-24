@@ -1,7 +1,7 @@
 /**********************************************************************************************
  *
- * Asprise Scanning and Imaging API
- * Copyright (C) 1998-2016. Asprise Inc. <asprise.com>
+ * Asprise Scanning and Imaging API - http://asprise.com/document-scanner-image-pdf/java-scanning-api-overview.html
+ * Copyright (C) 1998-2026. Asprise Inc. <asprise.com>
  *
  * This file is licensed under the GNU Affero General Public License version 3 as published by
  * the Free Software Foundation.
@@ -23,19 +23,22 @@ import java.util.*;
  * TWAIN constants (CAP_, ICAP_, TWEI_, TWEJ_) and util functions.
  */
 public class TwainConstants {
+    public static final String TWAIN_DLL_NAME = "twain.dll"; 
+    public static final String TWAIN_32_DLL_NAME = "twain_32.dll"; 
+    public static final String TWAINDSM_DLL_NAME = "TWAINDSM.dll"; 
 
-    public static int CAP_CUSTOMBASE = 0x8000; /* Base of custom capabilities */
+    public static int CAP_CUSTOMBASE = 0x8000; 
 
-    /* all data sources are REQUIRED to support these caps */
+
     public static int CAP_XFERCOUNT = 0x0001;
 
-    /* image data sources are REQUIRED to support these caps */
+
     public static int ICAP_COMPRESSION = 0x0100;
     public static int ICAP_PIXELTYPE = 0x0101;
     public static int ICAP_UNITS = 0x0102;
     public static int ICAP_XFERMECH = 0x0103;
 
-    /* all data sources MAY support these caps */
+
     public static int CAP_AUTHOR = 0x1000;
     public static int CAP_CAPTION = 0x1001;
     public static int CAP_FEEDERENABLED = 0x1002;
@@ -111,7 +114,7 @@ public class TwainConstants {
     public static int CAP_PRINTERINDEXTRIGGER = 0x104D;
     public static int CAP_PRINTERSTRINGPREVIEW = 0x104E;
 
-    /* image data sources MAY support these caps */
+
     public static int ICAP_AUTOBRIGHT = 0x1100;
     public static int ICAP_BRIGHTNESS = 0x1101;
     public static int ICAP_CONTRAST = 0x1103;
@@ -203,7 +206,7 @@ public class TwainConstants {
     public static int CAP_PASSTHRU = 0x1031;
     public static int CAP_POWERDOWNTIME = 0x1034;
 
-    // TWEI
+
     public static int TWEI_BARCODEX = 0x1200;
     public static int TWEI_BARCODEY = 0x1201;
     public static int TWEI_BARCODETEXT = 0x1202;
@@ -308,7 +311,7 @@ public class TwainConstants {
     public static int TWRC_BUSY = 10;
     public static int TWRC_SCANNERLOCKED = 11;
 
-    /* Condition Codes: Application gets these by doing DG_CONTROL DAT_STATUS MSG_GET.  */
+
     public static int TWCC_CUSTOMBASE = 0x8000;
 
     public static int TWCC_SUCCESS = 0;
@@ -340,37 +343,37 @@ public class TwainConstants {
     public static int TWCC_DOCTOODARK = 28;
     public static int TWCC_NOMEDIA = 29;
 
-    /* CAP_CLEARBUFFERS values */
+
     public static int TWCB_AUTO = 0;
     public static int TWCB_CLEAR = 1;
     public static int TWCB_NOCLEAR = 2;
 
-    /* TW_PASSTHRU.Direction values. */
+
     public static int TWDR_GET = 1;
     public static int TWDR_SET = 2;
 
-    /* TWEI_DESKEWSTATUS values. */
+
     public static int TWDSK_SUCCESS = 0;
     public static int TWDSK_REPORTONLY = 1;
     public static int TWDSK_FAIL = 2;
     public static int TWDSK_DISABLED = 3;
 
-    /* CAP_DUPLEX values */
+
     public static int TWDX_NONE = 0;
     public static int TWDX_1PASSDUPLEX = 1;
     public static int TWDX_2PASSDUPLEX = 2;
 
-    /* CAP_FEEDERALIGNMENT values */
+
     public static int TWFA_NONE = 0;
     public static int TWFA_LEFT = 1;
     public static int TWFA_CENTER = 2;
     public static int TWFA_RIGHT = 3;
 
-    /* ICAP_FEEDERTYPE values*/
+
     public static int TWFE_GENERAL = 0;
     public static int TWFE_PHOTO = 1;
 
-    /* ICAP_IMAGEFILEFORMAT values */
+
     public static int TWFF_TIFF = 0;
     public static int TWFF_PICT = 1;
     public static int TWFF_BMP = 2;
@@ -388,18 +391,18 @@ public class TwainConstants {
     public static int TWFF_PDFA = 15;
     public static int TWFF_PDFA2 = 16;
 
-    /* ICAP_FLASHUSED2 values */
+
     public static int TWFL_NONE = 0;
     public static int TWFL_OFF = 1;
     public static int TWFL_ON = 2;
     public static int TWFL_AUTO = 3;
     public static int TWFL_REDEYE = 4;
 
-    /* CAP_FEEDERORDER values */
+
     public static int TWFO_FIRSTPAGEFIRST = 0;
     public static int TWFO_LASTPAGEFIRST = 1;
 
-    /* CAP_FEEDERPOCKET values*/
+
     public static int TWFP_POCKETERROR = 0;
     public static int TWFP_POCKET1 = 1;
     public static int TWFP_POCKET2 = 2;
@@ -418,11 +421,11 @@ public class TwainConstants {
     public static int TWFP_POCKET15 = 15;
     public static int TWFP_POCKET16 = 16;
 
-    /* ICAP_FLIPROTATION values */
+
     public static int TWFR_BOOK = 0;
     public static int TWFR_FANFOLD = 1;
 
-    /* ICAP_FILTER values */
+
     public static int TWFT_RED = 0;
     public static int TWFT_GREEN = 1;
     public static int TWFT_BLUE = 2;
@@ -433,11 +436,11 @@ public class TwainConstants {
     public static int TWFT_YELLOW = 7;
     public static int TWFT_BLACK = 8;
 
-    /* ICAP_LIGHTPATH values */
+
     public static int TWLP_REFLECTIVE = 0;
     public static int TWLP_TRANSMISSIVE = 1;
 
-    /* ICAP_LIGHTSOURCE values */
+
     public static int TWLS_RED = 0;
     public static int TWLS_GREEN = 1;
     public static int TWLS_BLUE = 2;
@@ -446,13 +449,13 @@ public class TwainConstants {
     public static int TWLS_UV = 5;
     public static int TWLS_IR = 6;
 
-    /* ICAP_NOISEFILTER values */
+
     public static int TWNF_NONE = 0;
     public static int TWNF_AUTO = 1;
     public static int TWNF_LONEPIXEL = 2;
     public static int TWNF_MAJORITYRULE = 3;
 
-    /* ICAP_ORIENTATION values */
+
     public static int TWOR_ROT0 = 0;
     public static int TWOR_ROT90 = 1;
     public static int TWOR_ROT180 = 2;
@@ -463,23 +466,23 @@ public class TwainConstants {
     public static int TWOR_AUTOTEXT = 5;
     public static int TWOR_AUTOPICTURE = 6;
 
-    /* ICAP_OVERSCAN values */
+
     public static int TWOV_NONE = 0;
     public static int TWOV_AUTO = 1;
     public static int TWOV_TOPBOTTOM = 2;
     public static int TWOV_LEFTRIGHT = 3;
     public static int TWOV_ALL = 4;
 
-    /* Palette types for TW_PALETTE8 */
+
     public static int TWPA_RGB = 0;
     public static int TWPA_GRAY = 1;
     public static int TWPA_CMY = 2;
 
-    /* ICAP_PLANARCHUNKY values */
+
     public static int TWPC_CHUNKY = 0;
     public static int TWPC_PLANAR = 1;
 
-    /* TWEI_PATCHCODE values*/
+
     public static int TWPCH_PATCH1 = 0;
     public static int TWPCH_PATCH2 = 1;
     public static int TWPCH_PATCH3 = 2;
@@ -487,16 +490,16 @@ public class TwainConstants {
     public static int TWPCH_PATCH6 = 4;
     public static int TWPCH_PATCHT = 5;
 
-    /* ICAP_PIXELFLAVOR values */
+
     public static int TWPF_CHOCOLATE = 0;
     public static int TWPF_VANILLA = 1;
 
-    /* CAP_PRINTERMODE values */
+
     public static int TWPM_SINGLESTRING = 0;
     public static int TWPM_MULTISTRING = 1;
     public static int TWPM_COMPOUNDSTRING = 2;
 
-    /* CAP_PRINTER values */
+
     public static int TWPR_IMPRINTERTOPBEFORE = 0;
     public static int TWPR_IMPRINTERTOPAFTER = 1;
     public static int TWPR_IMPRINTERBOTTOMBEFORE = 2;
@@ -506,14 +509,14 @@ public class TwainConstants {
     public static int TWPR_ENDORSERBOTTOMBEFORE = 6;
     public static int TWPR_ENDORSERBOTTOMAFTER = 7;
 
-    /* CAP_PRINTERFONTSTYLE Added 2.3 */
+
     public static int TWPF_NORMAL = 0;
     public static int TWPF_BOLD = 1;
     public static int TWPF_ITALIC = 2;
     public static int TWPF_LARGESIZE = 3;
     public static int TWPF_SMALLSIZE = 4;
 
-    /* CAP_PRINTERINDEXTRIGGER Added 2.3 */
+
     public static int TWCT_PAGE = 0;
     public static int TWCT_PATCH1 = 1;
     public static int TWCT_PATCH2 = 2;
@@ -522,11 +525,11 @@ public class TwainConstants {
     public static int TWCT_PATCHT = 5;
     public static int TWCT_PATCH6 = 6;
 
-    /* CAP_POWERSUPPLY values */
+
     public static int TWPS_EXTERNAL = 0;
     public static int TWPS_BATTERY = 1;
 
-    /* ICAP_PIXELTYPE values (PT_ means Pixel Type) */
+
     public static int TWPT_BW = 0;
     public static int TWPT_GRAY = 1;
     public static int TWPT_RGB = 2;
@@ -541,50 +544,50 @@ public class TwainConstants {
     public static int TWPT_SCRGB = 11;
     public static int TWPT_INFRARED = 16;
 
-    /* CAP_SEGMENTED values */
+
     public static int TWSG_NONE = 0;
     public static int TWSG_AUTO = 1;
     public static int TWSG_MANUAL = 2;
 
-    /* ICAP_FILMTYPE values */
+
     public static int TWFM_POSITIVE = 0;
     public static int TWFM_NEGATIVE = 1;
 
-    /* CAP_DOUBLEFEEDDETECTION */
+
     public static int TWDF_ULTRASONIC = 0;
     public static int TWDF_BYLENGTH = 1;
     public static int TWDF_INFRARED = 2;
 
-    /* CAP_DOUBLEFEEDDETECTIONSENSITIVITY */
+
     public static int TWUS_LOW = 0;
     public static int TWUS_MEDIUM = 1;
     public static int TWUS_HIGH = 2;
 
-    /* CAP_DOUBLEFEEDDETECTIONRESPONSE */
+
     public static int TWDP_STOP = 0;
     public static int TWDP_STOPANDWAIT = 1;
     public static int TWDP_SOUND = 2;
     public static int TWDP_DONOTIMPRINT = 3;
 
-    /* ICAP_MIRROR values */
+
     public static int TWMR_NONE = 0;
     public static int TWMR_VERTICAL = 1;
     public static int TWMR_HORIZONTAL = 2;
 
-    /* CAP_PAPERHANDLING values */
+
     public static int TWPH_NORMAL = 0;
     public static int TWPH_FRAGILE = 1;
     public static int TWPH_THICK = 2;
     public static int TWPH_TRIFOLD = 3;
     public static int TWPH_PHOTOGRAPH = 4;
 
-    /* CAP_INDICATORSMODE values */
+
     public static int TWCI_INFO = 0;
     public static int TWCI_WARNING = 1;
     public static int TWCI_ERROR = 2;
     public static int TWCI_WARMUP = 3;
 
-    /* ICAP_SUPPORTEDSIZES values (SS_ means Supported Sizes) */
+
     public static int TWSS_NONE = 0;
     public static int TWSS_A4 = 1;
     public static int TWSS_JISB5 = 2;
@@ -640,13 +643,13 @@ public class TwainConstants {
     public static int TWSS_BUSINESSCARD = 53;
     public static int TWSS_MAXSIZE = 54;
 
-    /* ICAP_XFERMECH values (SX_ means Setup XFer) */
+
     public static int TWSX_NATIVE = 0;
     public static int TWSX_FILE = 1;
     public static int TWSX_MEMORY = 2;
     public static int TWSX_MEMFILE = 4;
 
-    /* ICAP_UNITS values (UN_ means UNits) */
+
     public static int TWUN_INCHES = 0;
     public static int TWUN_CENTIMETERS = 1;
     public static int TWUN_PICAS = 2;
@@ -1114,18 +1117,14 @@ public class TwainConstants {
         }
 
         Map<String, Integer> map = new HashMap<String, Integer>();
-        map.put("CAP_CUSTOMBASE", 0x8000); /* Base of custom capabilities */
-
-	/* all data sources are REQUIRED to support these caps */
+        map.put("CAP_CUSTOMBASE", 0x8000); 
         map.put("CAP_XFERCOUNT", 0x0001);
 
-	/* image data sources are REQUIRED to support these caps */
         map.put("ICAP_COMPRESSION", 0x0100);
         map.put("ICAP_PIXELTYPE", 0x0101);
         map.put("ICAP_UNITS", 0x0102);
         map.put("ICAP_XFERMECH", 0x0103);
 
-	/* all data sources MAY support these caps */
         map.put("CAP_AUTHOR", 0x1000);
         map.put("CAP_CAPTION", 0x1001);
         map.put("CAP_FEEDERENABLED", 0x1002);
@@ -1201,7 +1200,6 @@ public class TwainConstants {
         map.put("CAP_PRINTERINDEXTRIGGER", 0x104D);
         map.put("CAP_PRINTERSTRINGPREVIEW", 0x104E);
 
-	/* image data sources MAY support these caps */
         map.put("ICAP_AUTOBRIGHT", 0x1100);
         map.put("ICAP_BRIGHTNESS", 0x1101);
         map.put("ICAP_CONTRAST", 0x1103);
@@ -1305,18 +1303,14 @@ public class TwainConstants {
         }
 
         Map<Integer, String> map = new HashMap<Integer, String>();
-        map.put(0x8000, "CAP_CUSTOMBASE"); /* Base of custom capabilities */
-
-	/* all data sources are REQUIRED to support these caps */
+        map.put(0x8000, "CAP_CUSTOMBASE"); 
         map.put(0x0001, "CAP_XFERCOUNT");
 
-	/* image data sources are REQUIRED to support these caps */
         map.put(0x0100, "ICAP_COMPRESSION");
         map.put(0x0101, "ICAP_PIXELTYPE");
         map.put(0x0102, "ICAP_UNITS");
         map.put(0x0103, "ICAP_XFERMECH");
 
-	/* all data sources MAY support these caps */
         map.put(0x1000, "CAP_AUTHOR");
         map.put(0x1001, "CAP_CAPTION");
         map.put(0x1002, "CAP_FEEDERENABLED");
@@ -1392,7 +1386,6 @@ public class TwainConstants {
         map.put(0x104D, "CAP_PRINTERINDEXTRIGGER");
         map.put(0x104E, "CAP_PRINTERSTRINGPREVIEW");
 
-	/* image data sources MAY support these caps */
         map.put(0x1100, "ICAP_AUTOBRIGHT");
         map.put(0x1101, "ICAP_BRIGHTNESS");
         map.put(0x1103, "ICAP_CONTRAST");
@@ -1824,18 +1817,14 @@ public class TwainConstants {
         }
 
         Map<String, Integer> map = new HashMap<String, Integer>();
-        map.put("CAP_CUSTOMBASE", 0x8000); /* Base of custom capabilities */
-
-    /* all data sources are REQUIRED to support these caps */
+        map.put("CAP_CUSTOMBASE", 0x8000); 
         map.put("CAP_XFERCOUNT", 0x0001);
 
-    /* image data sources are REQUIRED to support these caps */
         map.put("ICAP_COMPRESSION", 0x0100);
         map.put("ICAP_PIXELTYPE", 0x0101);
         map.put("ICAP_UNITS", 0x0102);
         map.put("ICAP_XFERMECH", 0x0103);
 
-    /* all data sources MAY support these caps */
         map.put("CAP_AUTHOR", 0x1000);
         map.put("CAP_CAPTION", 0x1001);
         map.put("CAP_FEEDERENABLED", 0x1002);
@@ -1911,7 +1900,6 @@ public class TwainConstants {
         map.put("CAP_PRINTERINDEXTRIGGER", 0x104D);
         map.put("CAP_PRINTERSTRINGPREVIEW", 0x104E);
 
-    /* image data sources MAY support these caps */
         map.put("ICAP_AUTOBRIGHT", 0x1100);
         map.put("ICAP_BRIGHTNESS", 0x1101);
         map.put("ICAP_CONTRAST", 0x1103);
@@ -2003,7 +1991,6 @@ public class TwainConstants {
         map.put("CAP_PASSTHRU", 0x1031);
         map.put("CAP_POWERDOWNTIME", 0x1034);
 
-        // TWEI
         map.put("TWEI_BARCODEX", 0x1200);
         map.put("TWEI_BARCODEY", 0x1201);
         map.put("TWEI_BARCODETEXT", 0x1202);
@@ -2088,11 +2075,6 @@ public class TwainConstants {
         map.put("TWEJ_PATCH6", 0x0006);
         map.put("TWEJ_PATCHT", 0x0007);
 
-
-        /***************************************************************************
-         *            Return Codes and Condition Codes section                     *
-         ***************************************************************************/
-
         map.put("TWRC_CUSTOMBASE", 0x8000);
 
         map.put("TWRC_SUCCESS", 0);
@@ -2108,7 +2090,6 @@ public class TwainConstants {
         map.put("TWRC_BUSY", 10);
         map.put("TWRC_SCANNERLOCKED", 11);
 
-    /* Condition Codes: Application gets these by doing DG_CONTROL DAT_STATUS MSG_GET.  */
         map.put("TWCC_CUSTOMBASE", 0x8000);
 
         map.put("TWCC_SUCCESS", 0);
@@ -2140,37 +2121,30 @@ public class TwainConstants {
         map.put("TWCC_DOCTOODARK", 28);
         map.put("TWCC_NOMEDIA", 29);
 
-    /* CAP_CLEARBUFFERS values */
         map.put("TWCB_AUTO", 0);
         map.put("TWCB_CLEAR", 1);
         map.put("TWCB_NOCLEAR", 2);
 
-    /* TW_PASSTHRU.Direction values. */
         map.put("TWDR_GET", 1);
         map.put("TWDR_SET", 2);
 
-    /* TWEI_DESKEWSTATUS values. */
         map.put("TWDSK_SUCCESS", 0);
         map.put("TWDSK_REPORTONLY", 1);
         map.put("TWDSK_FAIL", 2);
         map.put("TWDSK_DISABLED", 3);
 
-    /* CAP_DUPLEX values */
         map.put("TWDX_NONE", 0);
         map.put("TWDX_1PASSDUPLEX", 1);
         map.put("TWDX_2PASSDUPLEX", 2);
 
-    /* CAP_FEEDERALIGNMENT values */
         map.put("TWFA_NONE", 0);
         map.put("TWFA_LEFT", 1);
         map.put("TWFA_CENTER", 2);
         map.put("TWFA_RIGHT", 3);
 
-    /* ICAP_FEEDERTYPE values*/
         map.put("TWFE_GENERAL", 0);
         map.put("TWFE_PHOTO", 1);
 
-    /* ICAP_IMAGEFILEFORMAT values */
         map.put("TWFF_TIFF", 0);
         map.put("TWFF_PICT", 1);
         map.put("TWFF_BMP", 2);
@@ -2188,18 +2162,15 @@ public class TwainConstants {
         map.put("TWFF_PDFA", 15);
         map.put("TWFF_PDFA2", 16);
 
-    /* ICAP_FLASHUSED2 values */
         map.put("TWFL_NONE", 0);
         map.put("TWFL_OFF", 1);
         map.put("TWFL_ON", 2);
         map.put("TWFL_AUTO", 3);
         map.put("TWFL_REDEYE", 4);
 
-    /* CAP_FEEDERORDER values */
         map.put("TWFO_FIRSTPAGEFIRST", 0);
         map.put("TWFO_LASTPAGEFIRST", 1);
 
-    /* CAP_FEEDERPOCKET values*/
         map.put("TWFP_POCKETERROR", 0);
         map.put("TWFP_POCKET1", 1);
         map.put("TWFP_POCKET2", 2);
@@ -2218,11 +2189,9 @@ public class TwainConstants {
         map.put("TWFP_POCKET15", 15);
         map.put("TWFP_POCKET16", 16);
 
-    /* ICAP_FLIPROTATION values */
         map.put("TWFR_BOOK", 0);
         map.put("TWFR_FANFOLD", 1);
 
-    /* ICAP_FILTER values */
         map.put("TWFT_RED", 0);
         map.put("TWFT_GREEN", 1);
         map.put("TWFT_BLUE", 2);
@@ -2233,11 +2202,9 @@ public class TwainConstants {
         map.put("TWFT_YELLOW", 7);
         map.put("TWFT_BLACK", 8);
 
-    /* ICAP_LIGHTPATH values */
         map.put("TWLP_REFLECTIVE", 0);
         map.put("TWLP_TRANSMISSIVE", 1);
 
-    /* ICAP_LIGHTSOURCE values */
         map.put("TWLS_RED", 0);
         map.put("TWLS_GREEN", 1);
         map.put("TWLS_BLUE", 2);
@@ -2246,13 +2213,11 @@ public class TwainConstants {
         map.put("TWLS_UV", 5);
         map.put("TWLS_IR", 6);
 
-    /* ICAP_NOISEFILTER values */
         map.put("TWNF_NONE", 0);
         map.put("TWNF_AUTO", 1);
         map.put("TWNF_LONEPIXEL", 2);
         map.put("TWNF_MAJORITYRULE", 3);
 
-    /* ICAP_ORIENTATION values */
         map.put("TWOR_ROT0", 0);
         map.put("TWOR_ROT90", 1);
         map.put("TWOR_ROT180", 2);
@@ -2263,23 +2228,19 @@ public class TwainConstants {
         map.put("TWOR_AUTOTEXT", 5);
         map.put("TWOR_AUTOPICTURE", 6);
 
-    /* ICAP_OVERSCAN values */
         map.put("TWOV_NONE", 0);
         map.put("TWOV_AUTO", 1);
         map.put("TWOV_TOPBOTTOM", 2);
         map.put("TWOV_LEFTRIGHT", 3);
         map.put("TWOV_ALL", 4);
 
-    /* Palette types for TW_PALETTE8 */
         map.put("TWPA_RGB", 0);
         map.put("TWPA_GRAY", 1);
         map.put("TWPA_CMY", 2);
 
-    /* ICAP_PLANARCHUNKY values */
         map.put("TWPC_CHUNKY", 0);
         map.put("TWPC_PLANAR", 1);
 
-    /* TWEI_PATCHCODE values*/
         map.put("TWPCH_PATCH1", 0);
         map.put("TWPCH_PATCH2", 1);
         map.put("TWPCH_PATCH3", 2);
@@ -2287,16 +2248,13 @@ public class TwainConstants {
         map.put("TWPCH_PATCH6", 4);
         map.put("TWPCH_PATCHT", 5);
 
-    /* ICAP_PIXELFLAVOR values */
         map.put("TWPF_CHOCOLATE", 0);
         map.put("TWPF_VANILLA", 1);
 
-    /* CAP_PRINTERMODE values */
         map.put("TWPM_SINGLESTRING", 0);
         map.put("TWPM_MULTISTRING", 1);
         map.put("TWPM_COMPOUNDSTRING", 2);
 
-    /* CAP_PRINTER values */
         map.put("TWPR_IMPRINTERTOPBEFORE", 0);
         map.put("TWPR_IMPRINTERTOPAFTER", 1);
         map.put("TWPR_IMPRINTERBOTTOMBEFORE", 2);
@@ -2306,14 +2264,12 @@ public class TwainConstants {
         map.put("TWPR_ENDORSERBOTTOMBEFORE", 6);
         map.put("TWPR_ENDORSERBOTTOMAFTER", 7);
 
-    /* CAP_PRINTERFONTSTYLE Added 2.3 */
         map.put("TWPF_NORMAL", 0);
         map.put("TWPF_BOLD", 1);
         map.put("TWPF_ITALIC", 2);
         map.put("TWPF_LARGESIZE", 3);
         map.put("TWPF_SMALLSIZE", 4);
 
-    /* CAP_PRINTERINDEXTRIGGER Added 2.3 */
         map.put("TWCT_PAGE", 0);
         map.put("TWCT_PATCH1", 1);
         map.put("TWCT_PATCH2", 2);
@@ -2322,11 +2278,9 @@ public class TwainConstants {
         map.put("TWCT_PATCHT", 5);
         map.put("TWCT_PATCH6", 6);
 
-    /* CAP_POWERSUPPLY values */
         map.put("TWPS_EXTERNAL", 0);
         map.put("TWPS_BATTERY", 1);
 
-    /* ICAP_PIXELTYPE values (PT_ means Pixel Type) */
         map.put("TWPT_BW", 0);
         map.put("TWPT_GRAY", 1);
         map.put("TWPT_RGB", 2);
@@ -2341,50 +2295,41 @@ public class TwainConstants {
         map.put("TWPT_SCRGB", 11);
         map.put("TWPT_INFRARED", 16);
 
-    /* CAP_SEGMENTED values */
         map.put("TWSG_NONE", 0);
         map.put("TWSG_AUTO", 1);
         map.put("TWSG_MANUAL", 2);
 
-    /* ICAP_FILMTYPE values */
         map.put("TWFM_POSITIVE", 0);
         map.put("TWFM_NEGATIVE", 1);
 
-    /* CAP_DOUBLEFEEDDETECTION */
         map.put("TWDF_ULTRASONIC", 0);
         map.put("TWDF_BYLENGTH", 1);
         map.put("TWDF_INFRARED", 2);
 
-    /* CAP_DOUBLEFEEDDETECTIONSENSITIVITY */
         map.put("TWUS_LOW", 0);
         map.put("TWUS_MEDIUM", 1);
         map.put("TWUS_HIGH", 2);
 
-    /* CAP_DOUBLEFEEDDETECTIONRESPONSE */
         map.put("TWDP_STOP", 0);
         map.put("TWDP_STOPANDWAIT", 1);
         map.put("TWDP_SOUND", 2);
         map.put("TWDP_DONOTIMPRINT", 3);
 
-    /* ICAP_MIRROR values */
         map.put("TWMR_NONE", 0);
         map.put("TWMR_VERTICAL", 1);
         map.put("TWMR_HORIZONTAL", 2);
 
-    /* CAP_PAPERHANDLING values */
         map.put("TWPH_NORMAL", 0);
         map.put("TWPH_FRAGILE", 1);
         map.put("TWPH_THICK", 2);
         map.put("TWPH_TRIFOLD", 3);
         map.put("TWPH_PHOTOGRAPH", 4);
 
-    /* CAP_INDICATORSMODE values */
         map.put("TWCI_INFO", 0);
         map.put("TWCI_WARNING", 1);
         map.put("TWCI_ERROR", 2);
         map.put("TWCI_WARMUP", 3);
 
-    /* ICAP_SUPPORTEDSIZES values (SS_ means Supported Sizes) */
         map.put("TWSS_NONE", 0);
         map.put("TWSS_A4", 1);
         map.put("TWSS_JISB5", 2);
@@ -2440,13 +2385,11 @@ public class TwainConstants {
         map.put("TWSS_BUSINESSCARD", 53);
         map.put("TWSS_MAXSIZE", 54);
 
-    /* ICAP_XFERMECH values (SX_ means Setup XFer) */
         map.put("TWSX_NATIVE", 0);
         map.put("TWSX_FILE", 1);
         map.put("TWSX_MEMORY", 2);
         map.put("TWSX_MEMFILE", 4);
 
-    /* ICAP_UNITS values (UN_ means UNits) */
         map.put("TWUN_INCHES", 0);
         map.put("TWUN_CENTIMETERS", 1);
         map.put("TWUN_PICAS", 2);
@@ -2454,10 +2397,6 @@ public class TwainConstants {
         map.put("TWUN_TWIPS", 4);
         map.put("TWUN_PIXELS", 5);
         map.put("TWUN_MILLIMETERS", 6);
-
-        /****************************************************************************
-         * Country Constants                                                        *
-         ****************************************************************************/
 
         map.put("TWCY_AFGHANISTAN", 1001);
         map.put("TWCY_ALGERIA", 213);
@@ -2699,9 +2638,6 @@ public class TwainConstants {
         map.put("TWCY_USVIRGINIS", 340);
         map.put("TWCY_VIETNAM", 84);
 
-        /****************************************************************************
-         * Language Constants                                                       *
-         ****************************************************************************/
         map.put("TWLG_USERLOCALE", -1);
         map.put("TWLG_DAN", 0);
         map.put("TWLG_DUT", 1);

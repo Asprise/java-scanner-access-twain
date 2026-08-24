@@ -6,7 +6,7 @@
 
     <groupId>com.asprise.imaging</groupId>
     <artifactId>java-scanner-access-twain</artifactId>
-    <version>12.0</version>
+    <version>12.0.27.2</version>
     <packaging>jar</packaging>
 
     <name>${project.groupId}:${project.artifactId}</name>
@@ -15,10 +15,11 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compile.source>1.5</maven.compile.source>
-        <maven.compile.target>1.5</maven.compile.target>
+        <maven.compile.source>1.7</maven.compile.source>
+        <maven.compile.target>1.7</maven.compile.target>
         <maven.javadoc.failOnError>false</maven.javadoc.failOnError>
         <source.excludeResources>true</source.excludeResources>			
+	
     </properties>
 
     <dependencies>
@@ -65,6 +66,9 @@
                         <manifest>
                             <mainClass>com.asprise.imaging.core.Imaging</mainClass>
                         </manifest>
+						<manifestEntries>
+							<Automatic-Module-Name>com.asprise.imaging.scan</Automatic-Module-Name>
+						</manifestEntries>
                     </archive>
                 </configuration>
             </plugin>
@@ -104,7 +108,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-gpg-plugin</artifactId>
-                <version>1.5</version>
+                <version>1.6</version>
                 <executions>
                     <execution>
                         <id>sign-artifacts</id>
@@ -112,21 +116,28 @@
                         <goals>
                             <goal>sign</goal>
                         </goals>
+                        <configuration>
+                            <gpgArguments>
+                                <arg>--pinentry-mode</arg>
+                                <arg>loopback</arg>
+                            </gpgArguments>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
 
             <plugin>
-                <groupId>org.sonatype.plugins</groupId>
-                <artifactId>nexus-staging-maven-plugin</artifactId>
-                <version>1.6.3</version>
+                <groupId>org.sonatype.central</groupId>
+                <artifactId>central-publishing-maven-plugin</artifactId>
+                <version>0.11.0</version>
                 <extensions>true</extensions>
                 <configuration>
-                    <serverId>ossrh</serverId>
-                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                    <publishingServerId>central</publishingServerId>
+                    <autoPublish>true</autoPublish>
+                    <waitUntil>published</waitUntil>
                 </configuration>
             </plugin>
+
         </plugins>
     </build>
 
@@ -152,15 +163,4 @@
         <developerConnection>scm:git:git@github.com:Asprise/java-scanner-access-twain.git</developerConnection>
         <url>git@github.com:Asprise/java-scanner-access-twain.git</url>
     </scm>
-
-    <distributionManagement>
-        <snapshotRepository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-        </snapshotRepository>
-        <repository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-        </repository>
-    </distributionManagement>
 </project>

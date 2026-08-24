@@ -1,7 +1,7 @@
 /**********************************************************************************************
  *
- * Asprise Scanning and Imaging API
- * Copyright (C) 1998-2016. Asprise Inc. <asprise.com>
+ * Asprise Scanning and Imaging API - http://asprise.com/document-scanner-image-pdf/java-scanning-api-overview.html
+ * Copyright (C) 1998-2026. Asprise Inc. <asprise.com>
  *
  * This file is licensed under the GNU Affero General Public License version 3 as published by
  * the Free Software Foundation.
@@ -23,6 +23,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.jr.ob.JSON;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 
@@ -32,6 +33,20 @@ public class JsonUtils {
     public static Map<Object, Object> parseJson(String s) throws IOException {
         JsonParser parser = new JsonFactory().enable(JsonParser.Feature.ALLOW_COMMENTS).createParser(s);
         Map<Object, Object> json = JSON.std.mapFrom(parser);
+        return json;
+    }
+
+    
+    public static Object[] parseJsonArray(String s) throws IOException {
+        JsonParser parser = new JsonFactory().enable(JsonParser.Feature.ALLOW_COMMENTS).createParser(s);
+        Object[] json = JSON.std.arrayFrom(parser);
+        return json;
+    }
+
+    
+    public static List<Object> parseJsonList(String s) throws IOException {
+        JsonParser parser = new JsonFactory().enable(JsonParser.Feature.ALLOW_COMMENTS).createParser(s);
+        List<Object> json = JSON.std.listFrom(parser);
         return json;
     }
 
@@ -78,6 +93,13 @@ public class JsonUtils {
             return defaultValue;
         }
         return toDouble(json.get(key), defaultValue);
+    }
+
+    public static String attrValueAsString(Map json, String key, String defaultValue) {
+        if(json == null || key == null) {
+            return defaultValue;
+        }
+        return json.containsKey(key) ? (json.get(key) == null ? null : json.get(key).toString()) : defaultValue;
     }
 
     
@@ -162,11 +184,12 @@ public class JsonUtils {
             return ((Boolean) object).booleanValue();
         }
 
-        try {
-            Boolean value = Boolean.valueOf(object.toString().trim());
-            return value;
-        } catch (Throwable e) {
-            return defaultValue;
+        String s = object.toString().trim();
+        if(s.equalsIgnoreCase("false") || s.equalsIgnoreCase("0")) {
+            return false;
+        } else if(s.equalsIgnoreCase("true") || s.equalsIgnoreCase("1")) {
+            return true;
         }
+        return defaultValue;
     }
 }

@@ -1,7 +1,7 @@
 /**********************************************************************************************
  *
- * Asprise Scanning and Imaging API
- * Copyright (C) 1998-2016. Asprise Inc. <asprise.com>
+ * Asprise Scanning and Imaging API - http://asprise.com/document-scanner-image-pdf/java-scanning-api-overview.html
+ * Copyright (C) 1998-2026. Asprise Inc. <asprise.com>
  *
  * This file is licensed under the GNU Affero General Public License version 3 as published by
  * the Free Software Foundation.
@@ -18,12 +18,12 @@
 package com.asprise.imaging.core.util.system;
 
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 
 public class StringUtils {
+
+    public static String[] EMPTY_STRING_ARRAY = new String[0];
 
     public static boolean equals(String s1, String s2, boolean caseSensitive) {
        if(s1 == null) {
@@ -31,6 +31,104 @@ public class StringUtils {
        } else {
            return s2 == null ? false : (caseSensitive ? s1.equals(s2) : s1.equalsIgnoreCase(s2));
        }
+    }
+
+    public static List<String> tokenize(String s, String separator) {
+        List<String> list = new ArrayList<String>();
+        if(s == null) {
+            return list;
+        }
+        if(separator == null) {
+            list.add(s);
+            return list;
+        }
+
+        int cursor = 0;
+        while(true) {
+            int posSep = s.indexOf(separator, cursor);
+            if(posSep == -1) {
+                list.add(s.substring(cursor));
+                break;
+            } else {
+                list.add(s.substring(cursor, posSep));
+                cursor = posSep + separator.length();
+            }
+        }
+
+        return list;
+    }
+
+    
+    public static Map<String, String> propertiesStringToMap(String propString, String propSeparator, String propKeyValueSeparactor, boolean convertPropNameToUpperCase) {
+        Map<String, String> map = new HashMap<String, String>();
+        if(propString == null || propString.trim().length() == 0) {
+            return map;
+        }
+
+        List<String> entries = tokenize(propString, propSeparator);
+        for(String entry : entries) {
+            int posSep = entry.indexOf(propKeyValueSeparactor);
+            if(posSep == -1) {
+                map.put(convertPropNameToUpperCase ? entry.toUpperCase() : entry, null);
+            } else {
+                map.put(convertPropNameToUpperCase ? entry.substring(0, posSep).toUpperCase() : entry.substring(0, posSep), entry.substring(posSep + propKeyValueSeparactor.length()));
+            }
+        }
+        return map;
+    }
+
+    public static String propertiesMapToString(Map<String, String> props, String propSeparator, String propKeyValueSeparactor) {
+        StringBuilder sb = new StringBuilder();
+        for(String key : props.keySet()) {
+            if(sb.length() > 0) {
+                sb.append(propSeparator);
+            }
+            String value = props.get(key);
+            sb.append(key).append(propKeyValueSeparactor).append(value == null ? "" : value);
+        }
+        return sb.toString();
+    }
+
+    
+    public static boolean patternMatchChars(String pattern, int patternIndex, String str, int strIndex) {
+        if(patternIndex == pattern.length()) {
+            return strIndex == str.length();
+        }
+
+        switch (pattern.charAt(patternIndex)) {
+            case '*':
+                return patternMatchChars(pattern, patternIndex + 1, str, strIndex) ||
+                        (strIndex < str.length() && patternMatchChars(pattern, patternIndex, str, strIndex + 1));
+
+            case '?':
+                return strIndex < str.length() && patternMatchChars(pattern, patternIndex + 1, str, strIndex + 1);
+
+            default:
+                return (strIndex < str.length() && pattern.charAt(patternIndex) == str.charAt(strIndex))
+                        && patternMatchChars(pattern, patternIndex + 1, str, strIndex + 1);
+        }
+    }
+
+    
+    public static boolean patternMatchString(String pattern, String str, boolean caseSensitive) {
+        if(pattern == null && str == null) {
+            return true;
+        } else {
+            if(pattern == null || str == null) {
+                return false;
+            }
+        }
+
+        if(!pattern.contains("*") && !pattern.contains("?")) { 
+            return caseSensitive ? pattern.equals(str) : pattern.equalsIgnoreCase(str);
+        }
+
+        if (caseSensitive) {
+            return patternMatchChars(pattern, 0, str, 0);
+        }
+        else {
+            return patternMatchChars(pattern.toLowerCase(), 0, str.toLowerCase(), 0);
+        }
     }
 
 
@@ -207,4 +305,57 @@ public class StringUtils {
         }
         return new String(buffer);
     }
+
+    public static void main(String[] args) {
+        System.out.println(tokenize("a=1|+b=2|c", "|+"));
+        System.out.println(tokenize("a=1|+b=2|c", "|"));
+        System.out.println(propertiesStringToMap("a=1|+b=2|c", "|+", "=", false));
+        System.out.println(propertiesMapToString(propertiesStringToMap("a=1|b=2|c", "|", "=", false), "|", "="));
+
+        String[] matchTest = new String[] {
+            "abc", "a?c",
+                "abcdef", "a*ef",
+                "abcd", "abc",
+                "a", "*",
+                "ab", "??"
+        };
+
+        for(int i = 0; i < matchTest.length; i += 2) {
+            System.out.println(matchTest[i] + " matches " + matchTest[i+1] + " --> " + patternMatchString(matchTest[i+1], matchTest[i], false));
+        }
+    }
+
+    public static String listToString(List list, String separator) {
+        if(list == null) {
+            return "";
+        }
+        StringBuilder sb = new StringBuilder();
+        for(int i = 0; i < list.size(); i++) {
+            if(sb.length() > 0) {
+                sb.append(separator);
+            }
+            sb.append(String.valueOf(list.get(i)));
+        }
+        return sb.toString();
+    }
+
+    public static String urlEncode(String input) {
+        StringBuilder resultStr = new StringBuilder();
+        for (char ch : input.toCharArray()) {
+            boolean isUnsafe = (ch > 128 || ch < 0) ? true : " %$&+,/:;=?@<>#%".indexOf(ch) >= 0;
+            if (isUnsafe) {
+                resultStr.append('%');
+                resultStr.append(toHex(ch / 16));
+                resultStr.append(toHex(ch % 16));
+            } else {
+                resultStr.append(ch);
+            }
+        }
+        return resultStr.toString();
+    }
+
+    public static char toHex(int ch) {
+        return (char) (ch < 10 ? '0' + ch : 'A' + ch - 10);
+    }
+
 }

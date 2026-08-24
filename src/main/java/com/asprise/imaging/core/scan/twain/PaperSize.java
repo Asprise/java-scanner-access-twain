@@ -1,7 +1,7 @@
 /**********************************************************************************************
  *
- * Asprise Scanning and Imaging API
- * Copyright (C) 1998-2016. Asprise Inc. <asprise.com>
+ * Asprise Scanning and Imaging API - http://asprise.com/document-scanner-image-pdf/java-scanning-api-overview.html
+ * Copyright (C) 1998-2026. Asprise Inc. <asprise.com>
  *
  * This file is licensed under the GNU Affero General Public License version 3 as published by
  * the Free Software Foundation.
@@ -104,13 +104,12 @@ public class PaperSize {
     }
 
     private static final Object[] sizeDefinition = new Object[] {
-            // Ref: http://www.paper-sizes.com/north-american-paper-sizes/north-american-loose-paper-sizes
+
             TwainConstants.TWSS_USLEDGER, "US Ledger", 432, 279, 17.0, 11.0,
-//            TwainConstants.TWSS_, "US Tabloid", 279, 432, 11.0, 17.0,
+
             TwainConstants.TWSS_USLETTER, "US Letter", 216, 279, 8.5, 11.0,
             TwainConstants.TWSS_USLEGAL, "US Legal", 216, 356, 8.5, 14.0,
-//            TwainConstants.TWSS_, "Government Letter", 203, 267, 8.0, 10.5,
-//            TwainConstants.TWSS_, "Junior Legal", 203, 127, 8.0, 5.0,
+
 
             TwainConstants.TWSS_USEXECUTIVE, "", 184, 267, 7.25, 10.50,
 
@@ -145,12 +144,12 @@ public class PaperSize {
             TwainConstants.TWSS_C4, "C4", 228, 324, 9.0, 12.8,
             TwainConstants.TWSS_C5, "C5", 162, 229, 6.4, 9.0,
             TwainConstants.TWSS_C6, "C6", 114, 162, 4.5, 6.4,
-//            TwainConstants.TWSS_, "C7/6", 81, 162, 3.2, 6.4,
+
             TwainConstants.TWSS_C7, "C7", 81, 114, 3.2, 4.5,
             TwainConstants.TWSS_C8, "C8", 57, 81, 2.2, 3.2,
             TwainConstants.TWSS_C9, "C9", 40, 57, 1.6, 2.2,
             TwainConstants.TWSS_C10, "C10", 28, 40, 1.1, 1.6,
-//            TwainConstants.TWSS_, "DL", 110, 220, 4.3, 8.7,
+
 
             TwainConstants.TWSS_JISB0, "JIS B0", 1030, 1456, 40.6, 57.3,
             TwainConstants.TWSS_JISB1, "JIS B1", 728, 1030, 28.7, 40.6,
@@ -163,8 +162,7 @@ public class PaperSize {
             TwainConstants.TWSS_JISB8, "JIS B8", 64, 91, 2.5, 3.6,
             TwainConstants.TWSS_JISB9, "JIS B9", 45, 64, 1.8, 2.5,
             TwainConstants.TWSS_JISB10, "JIS B10", 32, 45, 1.3, 1.8,
-//            TwainConstants.TWSS_, "JIS B11", 22, 32, 0.9, 1.3,
-//            TwainConstants.TWSS_, "JIS B12", 16, 22, 0.6, 0.9,
+
     };
 
     public String getName() {
