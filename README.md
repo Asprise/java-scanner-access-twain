@@ -1,7 +1,30 @@
 # java-scanner-access-twain
-[![Build Status](https://travis-ci.org/Asprise/java-ocr-api.svg?branch=master)](https://travis-ci.org)
-Asprise Scanning and Imageing SDK offers a high performance API library so that you can acquire images from and have total control on almost all kinds of scanners on both Windows 32bit and 64bit. With the SDK’s powerful and flexible API, you can equip your Java applications (Java applets, web applications, Swing/JavaFX components, JEE enterprise applications), C# VB.NET applications (Windows applications, Sliverlight, ASP.NET web service applications, ActiveX controls, etc.), Python, C/C++ and Delphi applications with functionality of high speed document scanning and image acquisition. High speed ADF scanning allows the end user to scan multiple pages into a ultra small size multi-page TIFF or PDF (including PDF/A-1) file.
-— Edit
+
+
+Scan documents directly from your Java applications (Java applets, web applications, Swing/JavaFX components, JEE enterprise applications). High speed ADF scanning allows the end user to scan multiple pages into a ultra small size multi-page TIFF or PDF (including PDF/A-1) file. **Support Java 26, 25, 21, 17, 11 and 8** (both 64bits and 32bits).
+
+### Add Dependency
+```xml
+<dependency> <groupId>com.asprise.imaging</groupId> <artifactId>java-scanner-access-twain</artifactId> <version>[12,)</version> </dependency>
+```
+
+### Complete Example Code
+```java
+package org.example;
+import com.asprise.imaging.core.*;
+
+public class Main {
+ static void main() throws Throwable {
+  // Imaging.setTwainBitness(Imaging.TWAIN_CONFIG_BITNESS_FORCE_64); // Use 32bit or 64bit scanner drivers
+   Result result = new com.asprise.imaging.scan.ui.workbench.AspriseScanUI().setRequest(Request.fromJson(
+    "{\"output_settings\" : [ { \"type\" : \"save\", \"format\" : \"pdf\", \"save_path\" : \"${TMP}\\\\${TMS}${EXT}\" } ] }"))
+    .setInstruction("Scan <b>test</b>").showDialog(null, "Dialog Title", true, null);
+   System.out.println("\nScanned: " + result.getImageFiles());
+ }
+}
+```
+
+![Screenshot of the Java scanning dialog when running the code above](https://asprise.com/scan/sdk/img/java-scan-dialog.png)
 
 Visit http://asprise.com/document-scanner-image-pdf/java-scanning-api-overview.html for developer's guide.
 
@@ -28,3 +51,5 @@ Core Features:
 - Blank Page Detection: flexible parameters allow you to perform powerful blank page detection.
 
 - Return, Save, Upload or Any Combinations: Using powerful JSON based domain-specific language to perform complex tasks like saving to local disk, upload to remote servers or any combinations.
+
+Visit http://asprise.com/document-scanner-image-pdf/java-scanning-api-overview.html for developer's guide.
